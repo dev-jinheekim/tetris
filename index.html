@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<head>
+    <meta charset="UTF-8">
+    <title>테트리스</title>
+</head>
+<body>
+<style>
+    #table {
+       border-collapse: collapse;
+       background-color: darkslategray;
+    }
+
+    #table tr, td {
+        border: 1px solid gray;
+    }
+
+    #table td {
+        width: 25px;
+        height: 25px;
+    }
+
+</style>
+<table id="table">
+
+</table>
+</body>
+
+<script>
+
+    var rowCount = 18;
+    var colCount = 10;
+    var board = document.getElementById('table');
+
+    function createRow() {
+        return document.createElement('TR');
+    }
+
+    function createCol() {
+        return document.createElement('TD');
+    }
+
+    for (i = 0; i < rowCount; i++) {
+
+        var tr = createRow();
+
+        for (j = 0; j < colCount; j++) {
+
+            var td = createCol();
+            tr.appendChild(td);
+
+        }
+
+        table.appendChild(tr);
+    }
+
+</script>
+</html>
