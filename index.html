@@ -8,7 +8,7 @@
     #table {
        border-collapse: collapse;
        background-color: darkslategray;
-    }
+                    }
 
     #table tr, td {
         border: 1px solid gray;
@@ -20,9 +20,9 @@
     }
 
 </style>
-<table id="table">
 
-</table>
+<table id="table"></table>
+
 </body>
 
 <script>
@@ -37,6 +37,15 @@
 
     function createCol() {
         return document.createElement('TD');
+    }
+
+    // 특정 칸의 색상을 변경
+    function changeColor(row, col, color) {
+
+        var x = board.childNodes.item(row);
+        var y = x.childNodes.item(col);
+        y.style.backgroundColor = color;
+
     }
 
     for (i = 0; i < rowCount; i++) {
