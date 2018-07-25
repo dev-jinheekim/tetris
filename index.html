@@ -48,6 +48,14 @@
 
     }
 
+    // L 모양 블럭 생성
+    function createBlock1(x, y, color) {
+        changeColor(x, y, color);
+        changeColor(x+1, y, color);
+        changeColor(x+2, y, color);
+        changeColor(x+2, y+1, color);
+    }
+
     for (i = 0; i < rowCount; i++) {
 
         var tr = createRow();
