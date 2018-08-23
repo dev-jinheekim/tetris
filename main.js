@@ -3,15 +3,38 @@ var board = document.getElementById('table');
 var rowCount = 18;
 var colCount = 10;
 var x = 0, y = Math.round(colCount/2-1);
-var blockL = [];
+var blockL = [
+        [x, y],
+        [x+1, y],
+        [x+2, y],
+        [x+2, y+1]
+    ];
 
 
+// 테트리스 배경화면 생성
 function createRow() {
     return document.createElement('TR');
 }
 
 function createCol() {
     return document.createElement('TD');
+}
+
+function createTable() {
+
+    for (i = 0; i < rowCount; i++) {
+
+        var tr = createRow();
+
+        for (j = 0; j < colCount; j++) {
+
+            var td = createCol();
+            tr.appendChild(td);
+
+        }
+
+        table.appendChild(tr);
+    }
 }
 
 
@@ -24,58 +47,47 @@ function changeColor(row, col, color) {
 
 }
 
-// L 블럭 생성
-function createBlockL(x, y, color) {
-
-    blockL = [
-        [x, y],
-        [x+1, y],
-        [x+2, y],
-        [x+2, y+1]
-    ];
+// 블럭 생성
+function createBlock(block, color) {
 
     for (i = 0; i < blockL.length; i++) {
+        changeColor(block[i][0], block[i][1], color);
+    }
 
-        changeColor(blockL[i][0], blockL[i][1], color);
+}
+
+// 블럭을 1칸 아래로 이동
+function moveBlock(block, color) {
+
+    for (i = 0; i < block.length; i++) {
+
+        block[i][0] = block[i][0] + 1;
+
+    }
+
+    for (i = 0; i < block.length; i++) {
+
+        changeColor(block[i][0], block[i][1], color);
 
     }
 
 }
 
-// 특정 초 마다 1 칸씩 아래로 블럭을 이동
-function moveBlock() {
 
 
-    for (i = 0; i < blockL.length; i++) {
+createTable();
+createBlock(blockL, 'white');
+//document.getElementById('table').innerHTML = '';
 
-        blockL[i][0] = blockL[i][0] + 1;
+setTimeout(
+    function(){
+        moveBlock(blockL, 'red');
+    }, 1000
+);
 
-    }
+setTimeout(
+    function(){
+        moveBlock(blockL, 'yellow');
+    }, 2000
+);
 
-
-    for (i = 0; i < blockL.length; i++) {
-
-        changeColor(blockL[i][0], blockL[i][1], 'red');
-
-    }
-
-
-}
-
-
-for (i = 0; i < rowCount; i++) {
-
-    var tr = createRow();
-
-    for (j = 0; j < colCount; j++) {
-
-        var td = createCol();
-        tr.appendChild(td);
-
-    }
-
-    table.appendChild(tr);
-}
-
-
-createBlockL(0, 4, 'white');
