@@ -1,14 +1,14 @@
 
 const block = document.getElementById('block');
-const trCount = 18;
-const tdCount = 10;
-const x = 0, y = Math.round(tdCount/2-1);
+const trCount = 18; // y
+const tdCount = 10; // x
+const x = Math.round(tdCount/2-1), y = 0;
 let blockL = [
-        [x, y],
-        [x+1, y],
-        [x+2, y],
-        [x+2, y+1]
-    ];
+    [x, y],
+    [x, y+1],
+    [x, y+2],
+    [x+1, y+2]
+];
 
 
 // 테트리스 배경화면 생성
@@ -43,8 +43,8 @@ function createTable(target) {
 // 특정 칸의 색상을 변경
 function changeColor(tr, td, color) {
 
-    let x = block.childNodes.item(tr);
-    let y = x.childNodes.item(td);
+    let x = block.childNodes.item(td);
+    let y = x.childNodes.item(tr);
     y.style.backgroundColor = color;
 
 }
@@ -72,7 +72,7 @@ function moveBlockDown(block) {
 function moveBlockLeft(block) {
 
     for (let i = 0; i < block.length; i++) {
-        block[i][1] = block[i][1] - 1;
+        block[i][0] = block[i][0] - 1;
     }
 }
 
@@ -80,7 +80,7 @@ function moveBlockLeft(block) {
 function moveBlockRight(block) {
 
     for (let i = 0; i < block.length; i++) {
-        block[i][1] = block[i][1] + 1;
+        block[i][0] = block[i][0] + 1;
     }
 }
 
