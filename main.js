@@ -1,8 +1,8 @@
 
 var block = document.getElementById('block');
-var rowCount = 18;
-var colCount = 10;
-var x = 0, y = Math.round(colCount/2-1);
+var trCount = 18;
+var tdCount = 10;
+var x = 0, y = Math.round(tdCount/2-1);
 var blockL = [
         [x, y],
         [x+1, y],
@@ -24,11 +24,11 @@ function createTable(target) {
 
     var table = document.getElementById(target);
 
-    for (var i = 0; i < rowCount; i++) {
+    for (var i = 0; i < trCount; i++) {
 
         var tr = createRow();
 
-        for (var j = 0; j < colCount; j++) {
+        for (var j = 0; j < tdCount; j++) {
 
             var td = createCol();
             tr.appendChild(td);
@@ -41,10 +41,10 @@ function createTable(target) {
 
 
 // 특정 칸의 색상을 변경
-function changeColor(row, col, color) {
+function changeColor(tr, td, color) {
 
-    var x = block.childNodes.item(row);
-    var y = x.childNodes.item(col);
+    var x = block.childNodes.item(tr);
+    var y = x.childNodes.item(td);
     y.style.backgroundColor = color;
 
 }
@@ -62,9 +62,7 @@ function createBlock(block, color) {
 function moveBlock(block) {
 
     for (var i = 0; i < block.length; i++) {
-
         block[i][0] = block[i][0] + 1;
-
     }
 }
 
