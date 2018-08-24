@@ -11,6 +11,7 @@ let blockL = [
 ];
 
 
+
 // 테트리스 배경화면 생성
 function createRow() {
     return document.createElement('TR');
@@ -32,11 +33,11 @@ function createTable(target) {
 
             let td = createCol();
             tr.appendChild(td);
-
         }
 
         table.appendChild(tr);
     }
+
 }
 
 
@@ -59,29 +60,50 @@ function createBlock(block, color) {
 
 }
 
-// FIX : table  영역에서 벗어나지 않도록 수정
+
 // 블럭을 1칸 아래로 이동
 function moveBlockDown(block) {
 
-    for (let i = 0; i < block.length; i++) {
-        block[i][0] = block[i][0] + 1;
+    let checkLocation = block.map(location => location[1]);
+    checkLocation.sort(function(a, b) { return a - b});
+
+    console.log(checkLocation);
+    if (checkLocation.pop() < trCount-1) {
+        for (let i = 0; i < block.length; i++) {
+            block[i][1] = block[i][1] + 1;
+        }
     }
+
 }
 
 // 블럭을 1칸 왼쪽으로 이동
 function moveBlockLeft(block) {
 
-    for (let i = 0; i < block.length; i++) {
-        block[i][0] = block[i][0] - 1;
+    let checkLocation = block.map(location => location[0]);
+    checkLocation.sort(function(a, b) { return a - b});
+    console.log(checkLocation);
+
+    if (checkLocation[0] >= 1) {
+        for (let i = 0; i < block.length; i++) {
+            block[i][0] = block[i][0] - 1;
+        }
     }
+
 }
 
 // 블럭을 1칸 오른쪽으로 이동
 function moveBlockRight(block) {
 
-    for (let i = 0; i < block.length; i++) {
-        block[i][0] = block[i][0] + 1;
+    let checkLocation = block.map(location => location[0]);
+    checkLocation.sort(function(a, b) { return a - b});
+    console.log(checkLocation);
+
+    if (checkLocation.pop() < tdCount-1) {
+        for (let i = 0; i < block.length; i++) {
+            block[i][0] = block[i][0] + 1;
+        }
     }
+
 }
 
 
@@ -97,15 +119,17 @@ document.addEventListener('keydown', (event) => {
         createTable('block');
         createBlock(blockL, 'red');
     }
+
     if (keyName === 'ArrowLeft') {
-        console.log('down');
+        console.log('left');
         moveBlockLeft(blockL);
         document.getElementById('block').innerHTML = '';
         createTable('block');
         createBlock(blockL, 'yellow');
     }
+
     if (keyName === 'ArrowRight') {
-        console.log('down');
+        console.log('right');
         moveBlockRight(blockL);
         document.getElementById('block').innerHTML = '';
         createTable('block');
