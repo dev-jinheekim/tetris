@@ -1,5 +1,5 @@
 
-var board = document.getElementById('table');
+var block = document.getElementById('block');
 var rowCount = 18;
 var colCount = 10;
 var x = 0, y = Math.round(colCount/2-1);
@@ -20,13 +20,15 @@ function createCol() {
     return document.createElement('TD');
 }
 
-function createTable() {
+function createTable(target) {
 
-    for (i = 0; i < rowCount; i++) {
+    var table = document.getElementById(target);
+
+    for (var i = 0; i < rowCount; i++) {
 
         var tr = createRow();
 
-        for (j = 0; j < colCount; j++) {
+        for (var j = 0; j < colCount; j++) {
 
             var td = createCol();
             tr.appendChild(td);
@@ -41,7 +43,7 @@ function createTable() {
 // 특정 칸의 색상을 변경
 function changeColor(row, col, color) {
 
-    var x = board.childNodes.item(row);
+    var x = block.childNodes.item(row);
     var y = x.childNodes.item(col);
     y.style.backgroundColor = color;
 
@@ -50,44 +52,46 @@ function changeColor(row, col, color) {
 // 블럭 생성
 function createBlock(block, color) {
 
-    for (i = 0; i < blockL.length; i++) {
+    for (var i = 0; i < blockL.length; i++) {
         changeColor(block[i][0], block[i][1], color);
     }
 
 }
 
 // 블럭을 1칸 아래로 이동
-function moveBlock(block, color) {
+function moveBlock(block) {
 
-    for (i = 0; i < block.length; i++) {
+    for (var i = 0; i < block.length; i++) {
 
         block[i][0] = block[i][0] + 1;
 
     }
-
-    for (i = 0; i < block.length; i++) {
-
-        changeColor(block[i][0], block[i][1], color);
-
-    }
-
 }
 
 
 
-createTable();
+createTable('board');
+createTable('block');
+
+
 createBlock(blockL, 'white');
-//document.getElementById('table').innerHTML = '';
+
 
 setTimeout(
     function(){
-        moveBlock(blockL, 'red');
+        document.getElementById('block').innerHTML = '';
+        createTable('block');
+        moveBlock(blockL);
+        createBlock(blockL, 'red');
     }, 1000
 );
 
 setTimeout(
     function(){
-        moveBlock(blockL, 'yellow');
+        document.getElementById('block').innerHTML = '';
+        createTable('block');
+        moveBlock(blockL);
+        createBlock(blockL, 'yellow');
     }, 2000
 );
 
