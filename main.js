@@ -59,10 +59,28 @@ function createBlock(block, color) {
 }
 
 // 블럭을 1칸 아래로 이동
-function moveBlock(block) {
+function moveBlockDown(block) {
 
     for (var i = 0; i < block.length; i++) {
         block[i][0] = block[i][0] + 1;
+    }
+}
+
+
+// 블럭을 1칸 왼쪽으로 이동
+function moveBlockLeft(block) {
+
+    for (var i = 0; i < block.length; i++) {
+        block[i][1] = block[i][1] - 1;
+    }
+}
+
+
+// 블럭을 1칸 오른쪽으로 이동
+function moveBlockRight(block) {
+
+    for (var i = 0; i < block.length; i++) {
+        block[i][1] = block[i][1] + 1;
     }
 }
 
@@ -79,7 +97,7 @@ setTimeout(
     function(){
         document.getElementById('block').innerHTML = '';
         createTable('block');
-        moveBlock(blockL);
+        moveBlockDown(blockL);
         createBlock(blockL, 'red');
     }, 1000
 );
@@ -88,8 +106,26 @@ setTimeout(
     function(){
         document.getElementById('block').innerHTML = '';
         createTable('block');
-        moveBlock(blockL);
+        moveBlockDown(blockL);
         createBlock(blockL, 'yellow');
     }, 2000
+);
+
+setTimeout(
+    function(){
+        document.getElementById('block').innerHTML = '';
+        createTable('block');
+        moveBlockLeft(blockL);
+        createBlock(blockL, 'yellow');
+    }, 3000
+);
+
+setTimeout(
+    function(){
+        document.getElementById('block').innerHTML = '';
+        createTable('block');
+        moveBlockRight(blockL);
+        createBlock(blockL, 'yellow');
+    }, 4000
 );
 
