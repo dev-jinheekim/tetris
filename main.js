@@ -2,25 +2,54 @@
 const board = document.getElementById('board');
 const trCount = 18; // y
 const tdCount = 10; // x
-const x = Math.round(tdCount / 2 - 1), y = 0;
+const startingPoint = [Math.round(tdCount / 2 - 1), 0];
 
 
 class BlockL {
 
-    constructor(x, y, color) {
-        this.location = [x,y];
-        this.block = [
-            [[x, y], [x, y + 1], [x, y + 2], [x + 1, y + 2]],
-            [[x, y + 3], [x + 1, y], [x + 2, y], [x + 3, y]],
-            [[x, y], [x + 1, y], [x + 1, y + 1], [x + 1, y + 2]],
-            [[x, y], [x + 1, y + 1], [x + 1, y + 2], [x, y + 1]],
-        ];
+    constructor(location, color) {
+        this.x = location[0];
+        this.y = location[1];
+        this.block = [];
         this.turn = 0;
-        this.color = 'white';
+        this.color = color;
+    }
+
+    make() {
+        this.block = [
+            [[this.x, this.y], [this.x, this.y + 1], [this.x, this.y + 2], [this.x + 1, this.y + 2]],
+            [[this.x, this.y + 3], [this.x + 1, this.y], [this.x + 2, this.y], [this.x + 3, this.y]],
+            [[this.x, this.y], [this.x + 1, this.y], [this.x + 1, this.y + 1], [this.x + 1, this.y + 2]],
+            [[this.x, this.y], [this.x + 1, this.y + 1], [this.x + 1, this.y + 2], [this.x, this.y + 1]],
+        ];
     }
 
     display() {
+        this.make();
+        document.getElementById('board').innerHTML = '';
+        createTable('board');
         this.block[this.turn].forEach(location => changeColor(location[0], location[1], this.color));
+    }
+
+    checkLocationTr(){
+        let y = [];
+        this.block[this.turn].forEach(location => y.push(location[0]));
+        y.sort(function(a, b) { return a - b});
+        return y.pop() < trCount;
+    }
+
+    checkLocationTd(){
+        let x = [];
+        this.block[this.turn].forEach(location => x.push(location[1]));
+        x.sort(function(a, b) { return a - b});
+        return x.pop() < tdCount || x[0] === 0;
+    }
+
+    move(tr, td) {
+        if (this.checkLocationTr() && this.checkLocationTd()) {
+            this.x += tr;
+            this.y += td;
+        }
     }
 
 }
@@ -39,5 +68,5 @@ function changeColor(tr, td, color) {
 createTable('background-table');
 createTable('board');
 
-let blockL = new BlockL(x,y,'white');
+let blockL = new BlockL(startingPoint,'white');
 blockL.display();
