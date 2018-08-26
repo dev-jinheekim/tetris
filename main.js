@@ -1,5 +1,5 @@
 
-const block = document.getElementById('block');
+const board = document.getElementById('board');
 const trCount = 18; // y
 const tdCount = 10; // x
 const x = Math.round(tdCount/2-1), y = 0;
@@ -44,7 +44,7 @@ function createTable(target) {
 // 특정 칸의 색상을 변경
 function changeColor(tr, td, color) {
 
-    let x = block.childNodes.item(td);
+    let x = board.childNodes.item(td);
     let y = x.childNodes.item(tr);
     y.style.backgroundColor = color;
 
@@ -139,6 +139,6 @@ document.addEventListener('keydown', (event) => {
 });
 
 
+createTable('background-table');
 createTable('board');
-createTable('block');
 createBlock(blockL, 'white');
