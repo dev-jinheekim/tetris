@@ -18,9 +18,9 @@ class BlockL {
     make() {
         this.block = [
             [[this.x, this.y], [this.x, this.y + 1], [this.x, this.y + 2], [this.x + 1, this.y + 2]],
-            [[this.x, this.y + 3], [this.x + 1, this.y], [this.x + 2, this.y], [this.x + 3, this.y]],
+            [[this.x, this.y + 1], [this.x + 1, this.y+1], [this.x + 2, this.y+1], [this.x + 2, this.y]],
             [[this.x, this.y], [this.x + 1, this.y], [this.x + 1, this.y + 1], [this.x + 1, this.y + 2]],
-            [[this.x, this.y], [this.x + 1, this.y + 1], [this.x + 1, this.y + 2], [this.x, this.y + 1]],
+            [[this.x, this.y], [this.x + 1, this.y], [this.x + 2, this.y], [this.x, this.y + 1]],
         ];
     }
 
@@ -31,24 +31,47 @@ class BlockL {
         this.block[this.turn].forEach(location => changeColor(location[0], location[1], this.color));
     }
 
-    checkLocationTr(){
-        let y = [];
-        this.block[this.turn].forEach(location => y.push(location[0]));
-        y.sort(function(a, b) { return a - b});
-        return y.pop() < trCount;
-    }
-
-    checkLocationTd(){
+    collectX(){
         let x = [];
         this.block[this.turn].forEach(location => x.push(location[1]));
         x.sort(function(a, b) { return a - b});
-        return x.pop() < tdCount || x[0] === 0;
+        return x;
     }
 
-    move(tr, td) {
-        if (this.checkLocationTr() && this.checkLocationTd()) {
-            this.x += tr;
-            this.y += td;
+    collectY(){
+        let y = [];
+        this.block[this.turn].forEach(location => y.push(location[0]));
+        y.sort(function(a, b) { return a - b});
+        return y;
+    }
+
+    moveDown() {
+        let x = this.collectX();
+        if (x.pop() < trCount -1) {
+            this.y += 1;
+        }
+    }
+
+    moveLeft() {
+        let y = this.collectY();
+        if (y[0] >= 1) {
+            this.x -= 1;
+        }
+    }
+
+    moveRight() {
+        let y = this.collectY();
+        if (y.pop() < tdCount -1) {
+            this.x += 1;
+        }
+    }
+
+    transform() {
+        // FIX :  블럭이 밖으로 못나가게 수정
+        if (this.turn < this.block.length - 1) {
+            this.turn += 1;
+        } else {
+            this.turn = 0;
         }
     }
 
@@ -63,6 +86,37 @@ function changeColor(tr, td, color) {
     y.style.backgroundColor = color;
 
 }
+
+// 키입력 이벤트와 함수 연결
+document.addEventListener('keydown', (event) => {
+
+    const keyName = event.key;
+
+    if (keyName === 'ArrowDown') {
+        console.log(keyName);
+        blockL.moveDown();
+        blockL.display();
+    }
+
+    if (keyName === 'ArrowLeft') {
+        console.log(keyName);
+        blockL.moveLeft();
+        blockL.display();
+    }
+
+    if (keyName === 'ArrowRight') {
+        console.log(keyName);
+        blockL.moveRight();
+        blockL.display();
+    }
+
+    if (keyName === 'ArrowUp') {
+        console.log(keyName);
+        blockL.transform();
+        blockL.display();
+    }
+
+});
 
 
 createTable('background-table');
