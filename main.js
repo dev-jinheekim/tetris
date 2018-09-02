@@ -31,47 +31,55 @@ class BlockL {
         this.block[this.turn].forEach(location => changeColor(location[0], location[1], this.color));
     }
 
-    collectX(){
+    collectX(turn){
         let x = [];
-        this.block[this.turn].forEach(location => x.push(location[1]));
+        this.block[turn].forEach(location => x.push(location[1]));
         x.sort(function(a, b) { return a - b});
         return x;
     }
 
-    collectY(){
+    collectY(turn){
         let y = [];
-        this.block[this.turn].forEach(location => y.push(location[0]));
+        this.block[turn].forEach(location => y.push(location[0]));
         y.sort(function(a, b) { return a - b});
         return y;
     }
 
     moveDown() {
-        let x = this.collectX();
+        let x = this.collectX(this.turn);
         if (x.pop() < trCount -1) {
             this.y += 1;
         }
     }
 
     moveLeft() {
-        let y = this.collectY();
+        let y = this.collectY(this.turn);
         if (y[0] >= 1) {
             this.x -= 1;
         }
     }
 
     moveRight() {
-        let y = this.collectY();
+        let y = this.collectY(this.turn);
         if (y.pop() < tdCount -1) {
             this.x += 1;
         }
     }
 
-    transform() {
-        // FIX :  블럭이 밖으로 못나가게 수정
+    next() {
         if (this.turn < this.block.length - 1) {
-            this.turn += 1;
+            return this.turn + 1
         } else {
-            this.turn = 0;
+            return 0;
+        }
+    }
+
+    transform() {
+        let overTd = this.collectX(this.next()).find(x => x >= tdCount);
+        let overTr = this.collectY(this.next()).find(y => y >= tdCount);
+
+        if (overTd === undefined && overTr === undefined){
+            this.turn = this.next();
         }
     }
 
@@ -124,3 +132,4 @@ createTable('board');
 
 let blockL = new BlockL(startingPoint,'white');
 blockL.display();
+    
