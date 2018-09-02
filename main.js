@@ -4,7 +4,6 @@ const trCount = 18; // y = tr
 const tdCount = 10; // x = td
 const startingPoint = [Math.round(tdCount / 2 - 1), 0];
 
-
 class BlockL {
 
     constructor(location, color) {
@@ -49,6 +48,7 @@ class BlockL {
         let y = this.collectY(this.turn);
         if (y.pop() < trCount -1) {
             this.y += 1;
+            this.display();
         }
     }
 
@@ -56,6 +56,7 @@ class BlockL {
         let x = this.collectX(this.turn);
         if (x[0] >= 1) {
             this.x -= 1;
+            this.display();
         }
     }
 
@@ -63,6 +64,7 @@ class BlockL {
         let x = this.collectX(this.turn);
         if (x.pop() < tdCount -1) {
             this.x += 1;
+            this.display();
         }
     }
 
@@ -80,6 +82,7 @@ class BlockL {
         if (overTd === undefined && overTr === undefined){
             this.turn = this.next();
         }
+        this.display();
     }
 
 }
@@ -102,29 +105,24 @@ document.addEventListener('keydown', (event) => {
     if (keyName === 'ArrowDown') {
         console.log(keyName);
         blockL.moveDown();
-        blockL.display();
     }
 
     if (keyName === 'ArrowLeft') {
         console.log(keyName);
         blockL.moveLeft();
-        blockL.display();
     }
 
     if (keyName === 'ArrowRight') {
         console.log(keyName);
         blockL.moveRight();
-        blockL.display();
     }
 
     if (keyName === 'ArrowUp') {
         console.log(keyName);
         blockL.transform();
-        blockL.display();
     }
 
 });
-
 
 createTable('background-table');
 createTable('board');
