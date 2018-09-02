@@ -1,7 +1,7 @@
 
 const board = document.getElementById('board');
-const trCount = 18; // y
-const tdCount = 10; // x
+const trCount = 18; // y = tr
+const tdCount = 10; // x = td
 const startingPoint = [Math.round(tdCount / 2 - 1), 0];
 
 
@@ -33,35 +33,35 @@ class BlockL {
 
     collectX(turn){
         let x = [];
-        this.block[turn].forEach(location => x.push(location[1]));
+        this.block[turn].forEach(location => x.push(location[0])); // x = td
         x.sort(function(a, b) { return a - b});
         return x;
     }
 
     collectY(turn){
         let y = [];
-        this.block[turn].forEach(location => y.push(location[0]));
+        this.block[turn].forEach(location => y.push(location[1])); // y = tr
         y.sort(function(a, b) { return a - b});
         return y;
     }
 
     moveDown() {
-        let x = this.collectX(this.turn);
-        if (x.pop() < trCount -1) {
+        let y = this.collectY(this.turn);
+        if (y.pop() < trCount -1) {
             this.y += 1;
         }
     }
 
     moveLeft() {
-        let y = this.collectY(this.turn);
-        if (y[0] >= 1) {
+        let x = this.collectX(this.turn);
+        if (x[0] >= 1) {
             this.x -= 1;
         }
     }
 
     moveRight() {
-        let y = this.collectY(this.turn);
-        if (y.pop() < tdCount -1) {
+        let x = this.collectX(this.turn);
+        if (x.pop() < tdCount -1) {
             this.x += 1;
         }
     }
@@ -76,8 +76,7 @@ class BlockL {
 
     transform() {
         let overTd = this.collectX(this.next()).find(x => x >= tdCount);
-        let overTr = this.collectY(this.next()).find(y => y >= tdCount);
-
+        let overTr = this.collectY(this.next()).find(y => y >= trCount);
         if (overTd === undefined && overTr === undefined){
             this.turn = this.next();
         }
@@ -132,4 +131,3 @@ createTable('board');
 
 let blockL = new BlockL(startingPoint,'white');
 blockL.display();
-    
