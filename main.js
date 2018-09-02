@@ -124,8 +124,29 @@ document.addEventListener('keydown', (event) => {
 
 });
 
+
+function autoDown(block) {
+
+    let auto = setInterval(function(){ down() }, 1000);
+    let y = block.collectY(block.turn).pop();
+
+    function down() {
+        if (y >= trCount - 1) {
+            clearInterval(auto);
+        } else {
+            block.moveDown();
+            y = block.collectY(block.turn).pop();
+        }
+    }
+}
+
+
 createTable('background-table');
 createTable('board');
 
 let blockL = new BlockL(startingPoint,'white');
+
 blockL.display();
+autoDown(blockL);
+
+
