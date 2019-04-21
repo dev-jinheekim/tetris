@@ -7,11 +7,11 @@ const startingPoint = {
     x: Math.round(tdCount / 2 - 1),
     y: 0
 };
-const color = ['#fe8a71','#f6cd61', '#c2ded1', '#ffffff', '#00ced1'];
+const color = ['#fe8a71','#f6cd61', '#c2ded1', '#ffffff', '#00ced1', '#0086ad'];
 
 let blocks = [];
 let block = blocks[blocks.length - 1];
-let auto = setInterval(function(){ autoDown() }, 1000);
+let auto = setInterval(function(){ block.moveDownBlock() }, 1000);
 
 
 class BlockL {
@@ -21,77 +21,88 @@ class BlockL {
         this.y = startingPoint.y;
         this.cordinate = [];
         this.turn = 0;
-        this.color = color[Math.round(Math.random() * 5)];
+        this.color = '##0086ad';
         this.locations = [];
+        this.nextLocation = [];
     }
 
     // x, y 좌표를 기준으로 블럭의 좌표를 생성
-    make() {
-        this.cordinate = [
-            [[this.x, this.y], [this.x, this.y + 1], [this.x, this.y + 2], [this.x + 1, this.y + 2]],
-            [[this.x, this.y + 1], [this.x + 1, this.y+1], [this.x + 2, this.y+1], [this.x + 2, this.y]],
-            [[this.x, this.y], [this.x + 1, this.y], [this.x + 1, this.y + 1], [this.x + 1, this.y + 2]],
-            [[this.x, this.y], [this.x + 1, this.y], [this.x + 2, this.y], [this.x, this.y + 1]],
+    make(x, y) {
+        return  [
+            [[x, y], [x, y + 1], [x, y + 2], [x + 1, y + 2]],
+            [[x, y + 1], [x + 1, y+1], [x + 2, y+1], [x + 2, y]],
+            [[x, y], [x + 1, y], [x + 1, y + 1], [x + 1, y + 2]],
+            [[x, y], [x + 1, y], [x + 2, y], [x, y + 1]],
         ];
-        this.locations = this.cordinate[this.turn];
     }
 
     display() {
 
-        this.make();
+        this.cordinate = this.make(this.x, this.y);
+        this.locations = this.cordinate[this.turn];
+
         // 화면 초기화
         board.innerHTML = '';
         createTable('board');
         changeCellColor(board, this.locations, this.color);
     }
 
-    collectX(){
+    collectX(turn = this.turn){
         let x = [];
-        this.locations.forEach(location => x.push(location[0])); // x = td
+        this.cordinate[turn].forEach(location => x.push(location[0])); // x = td
         x.sort(function(a, b) { return a - b});
-        console.log(x);
         return x;
     }
 
-    collectY(){
+    collectY(turn = this.turn){
         let y = [];
-        this.locations.forEach(location => y.push(location[1])); // y = tr
+        this.cordinate[turn].forEach(location => y.push(location[1])); // y = tr
         y.sort(function(a, b) { return a - b});
         return y;
     }
 
     collectXY() {
-
         let allXY = [];
-
-        for (let i  = 1; i < blocks.length; i++) {
+        for (let i = 0; i < blocks.length - 1; i++) {
             const block = blocks[i];
-            allXY.push(block.locations);
+            allXY = allXY.concat(block.locations);
         }
-
-        console.log('all xy', allXY);
         return allXY;
     }
 
-    isPossibleMove() {
+    isExistBlock(turn) {
 
-        // TODO : 이동하려는 곳에 블럭이 있는지 확인하기
-        return true;
+        let isPossible = true;
+        this.nextLocation[turn].forEach((nextLocation) => {
+
+            this.collectXY().find((existBlock) => {
+                if (existBlock.toString() === nextLocation.toString()) {
+                    isPossible = false;
+                }
+            })
+        });
+
+        return isPossible;
     }
-
 
     moveDownBlock() {
         let y = this.collectY();
-        console.log(this.collectXY());
-        if (y.pop() < trCount -1) {
+        this.nextLocation = this.make(this.x, this.y + 1);
+
+        if (y.pop() < trCount -1 && this.isExistBlock(this.turn)) {
             this.y += 1;
             this.display();
+        } else {
+            // TODO: 블럭이 맨위까지 쌓이면 게임 종료하기
+            makeNewBlock();
         }
     }
 
     moveLeftBlock() {
         let x = this.collectX();
-        if (x[0] >= 1) {
+        this.nextLocation = this.make(this.x - 1, this.y);
+
+        if (x[0] >= 1 && this.isExistBlock(this.turn)) {
             this.x -= 1;
             this.display();
         }
@@ -99,34 +110,35 @@ class BlockL {
 
     moveRightBlock() {
         let x = this.collectX();
-        if (x.pop() < tdCount -1) {
+        this.nextLocation = this.make(this.x + 1, this.y + 1);
+
+        if (x.pop() < tdCount -1 && this.isExistBlock(this.turn)) {
             this.x += 1;
             this.display();
         }
     }
 
-    next() {
+    nextTurn() {
         if (this.turn < this.cordinate.length - 1) {
-            console.log('next', this.turn + 1);
             return this.turn + 1
         } else {
-            console.log('next', 0);
             return 0;
         }
     }
 
     turnBlock() {
-        let overTd = this.collectX(this.next()).find(x => x >= tdCount);
-        let overTr = this.collectY(this.next()).find(y => y >= trCount);
-        if (overTd === undefined && overTr === undefined){
-            this.turn = this.next();
+
+        let overTd = this.collectX(this.nextTurn()).find(x => x >= tdCount);
+        let overTr = this.collectY(this.nextTurn()).find(y => y >= trCount);
+        this.nextLocation = this.make(this.x, this.y);
+
+        if (overTd === undefined && overTr === undefined && this.isExistBlock(this.nextTurn())){
+            this.turn = this.nextTurn();
         }
-        // TODO : this.isPossibleMove();
         this.locations = this.cordinate[this.turn];
         this.display();
     }
 }
-
 
 function changeCellColor(element, locations, color) {
 
@@ -160,26 +172,16 @@ document.addEventListener('keydown', (event) => {
     }
 
     if (keyName === 'Escape') {
-        clearInterval(auto);
+        endGame();
     }
 
 });
 
-function autoDown() {
-
-    let y = block.collectY(block.turn).pop(); // 가장 작은 y값
-
-    if (y >= trCount - 1) { // 바닥에 닿으면
-        makeNewBlock();
-    } else {
-        block.moveDownBlock();
-        y = block.collectY(block.turn).pop();
-    }
-}
-
 function makeNewBlock() {
     blocks.push(new BlockL());
     block = blocks[blocks.length-1];
+    block.color = color[Math.round(Math.random() * 5)];
+    console.log('make color', block.color);
     displayDeadBlock();
     block.display();
 }
@@ -194,6 +196,10 @@ function displayDeadBlock() {
 function setGame() {
     createTable('background-table');
     createTable('board');
+}
+
+function endGame() {
+    clearInterval(auto);
 }
 
 
