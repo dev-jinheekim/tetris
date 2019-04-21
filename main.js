@@ -1,4 +1,5 @@
 
+const background = document.getElementById('background-table');
 const board = document.getElementById('board');
 const trCount = 18; // y = tr
 const tdCount = 10; // x = td
@@ -6,20 +7,26 @@ const startingPoint = {
     x: Math.round(tdCount / 2 - 1),
     y: 0
 };
+const color = ['#fe8a71','#f6cd61', '#c2ded1', '#ffffff', '#00ced1'];
+
+let blocks = [];
+let block = blocks[blocks.length - 1];
+let auto = setInterval(function(){ autoDown() }, 1000);
+
 
 class BlockL {
 
-    constructor(color) {
+    constructor() {
         this.x = startingPoint.x;
         this.y = startingPoint.y;
-        this.block = [];
+        this.cordinate = [];
         this.order = 0;
-        this.color = color;
+        this.color = color[Math.round(Math.random() * 5)];
     }
 
     // x, y 좌표를 기준으로 블럭의 좌표를 생성
     make() {
-        this.block = [
+        this.cordinate = [
             [[this.x, this.y], [this.x, this.y + 1], [this.x, this.y + 2], [this.x + 1, this.y + 2]],
             [[this.x, this.y + 1], [this.x + 1, this.y+1], [this.x + 2, this.y+1], [this.x + 2, this.y]],
             [[this.x, this.y], [this.x + 1, this.y], [this.x + 1, this.y + 1], [this.x + 1, this.y + 2]],
@@ -32,30 +39,51 @@ class BlockL {
         this.make();
 
         // 화면 초기화
-        document.getElementById('board').innerHTML = '';
+        board.innerHTML = '';
         createTable('board');
 
-        this.block[this.order].forEach(location =>
-            changeBGColor(location[0], location[1], this.color)
+        this.cordinate[this.order].forEach(location =>
+            changeBordColor(location[0], location[1], this.color)
         );
     }
 
-    collectX(turn){
+    collectX(){
         let x = [];
-        this.block[turn].forEach(location => x.push(location[0])); // x = td
+        this.cordinate[this.order].forEach(location => x.push(location[0])); // x = td
         x.sort(function(a, b) { return a - b});
         return x;
     }
 
-    collectY(turn){
+    collectY(){
         let y = [];
-        this.block[turn].forEach(location => y.push(location[1])); // y = tr
+        this.cordinate[this.order].forEach(location => y.push(location[1])); // y = tr
         y.sort(function(a, b) { return a - b});
         return y;
     }
 
+    collectXY() {
+
+        let allXY = []; // [[1,2],[1,2],[1,2]];
+
+        for (let i  = 1; i < blocks.length; i++) {
+
+            const block = blocks[i];
+            console.log('is movement block', block);
+            console.log('is movement block', block.order);
+            console.log('is movement block', block.cordinate[block.order]);
+            allXY.push(block.cordinate[block.order]);
+
+        }
+        console.log('all xy', allXY);
+
+        // blocks 에 있는 칸들과 내가 이동하려고 하는 칸이 겹치는지 확인하자
+
+        return 'true';
+    }
+
     moveDown() {
-        let y = this.collectY(this.order);
+        let y = this.collectY();
+        console.log(this.collectXY());
         if (y.pop() < trCount -1) {
             this.y += 1;
             this.display();
@@ -63,7 +91,7 @@ class BlockL {
     }
 
     moveLeft() {
-        let x = this.collectX(this.order);
+        let x = this.collectX();
         if (x[0] >= 1) {
             this.x -= 1;
             this.display();
@@ -71,7 +99,7 @@ class BlockL {
     }
 
     moveRight() {
-        let x = this.collectX(this.order);
+        let x = this.collectX();
         if (x.pop() < tdCount -1) {
             this.x += 1;
             this.display();
@@ -79,7 +107,7 @@ class BlockL {
     }
 
     next() {
-        if (this.order < this.block.length - 1) {
+        if (this.order < this.cordinate.length - 1) {
             return this.order + 1
         } else {
             return 0;
@@ -98,10 +126,19 @@ class BlockL {
 }
 
 
-// 특정 칸의 색상을 변경
-function changeBGColor(tr, td, color) {
+// 보드칸의 색상을 변경
+function changeBordColor(tr, td, color) {
 
     let x = board.childNodes.item(td);
+    let y = x.childNodes.item(tr);
+    y.style.backgroundColor = color;
+
+}
+
+// 배경칸의 색상을 변경
+function changeBGColor(tr, td, color) {
+
+    let x = background.childNodes.item(td);
     let y = x.childNodes.item(tr);
     y.style.backgroundColor = color;
 
@@ -113,50 +150,70 @@ document.addEventListener('keydown', (event) => {
     const keyName = event.key;
 
     if (keyName === 'ArrowDown') {
-        console.log(keyName);
-        blockL.moveDown();
+        block.moveDown();
     }
 
     if (keyName === 'ArrowLeft') {
-        console.log(keyName);
-        blockL.moveLeft();
+        block.moveLeft();
     }
 
     if (keyName === 'ArrowRight') {
-        console.log(keyName);
-        blockL.moveRight();
+        block.moveRight();
     }
 
     if (keyName === 'ArrowUp') {
-        console.log(keyName);
-        blockL.turn();
+        block.turn();
+    }
+
+    if (keyName === 'Escape') {
+        clearInterval(auto);
     }
 
 });
 
+function autoDown() {
 
-function autoDown(block) {
+    let y = block.collectY(block.order).pop(); // 가장 작은 y값
 
-    let auto = setInterval(function(){ down() }, 1000);
-    let y = block.collectY(block.order).pop();
-
-    function down() {
-        if (y >= trCount - 1) {
-            clearInterval(auto);
-        } else {
-            block.moveDown();
-            y = block.collectY(block.order).pop();
-        }
+    if (y >= trCount - 1) { // 바닥에 닿으면
+        makeNewBlock();
+    } else {
+        block.moveDown();
+        y = block.collectY(block.order).pop();
     }
 }
 
+function makeNewBlock() {
+    blocks.push(new BlockL());
+    block = blocks[blocks.length-1];
+    // 과거블록 표시해주기
+    console.log(1);
+    displayDeadBlock();
+    console.log(2);
+    block.display();
+    console.log(3);
+}
 
-createTable('background-table');
-createTable('board');
+function displayDeadBlock() {
 
-let blockL = new BlockL('white');
+    console.log('blocks', blocks);
 
-blockL.display();
-autoDown(blockL);
+    for (let i = 0; i < blocks.length - 1; i++) {
+
+        const block = blocks[i];
+        block.cordinate[block.order].forEach(location => {
+            changeBGColor(location[0], location[1], block.color);
+        });
+
+    }
+
+}
+
+function setGame() {
+    createTable('background-table');
+    createTable('board');
+}
 
 
+setGame();
+makeNewBlock();
