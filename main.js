@@ -20,8 +20,9 @@ class BlockL {
         this.x = startingPoint.x;
         this.y = startingPoint.y;
         this.cordinate = [];
-        this.order = 0;
+        this.turn = 0;
         this.color = color[Math.round(Math.random() * 5)];
+        this.locations = [];
     }
 
     // x, y 좌표를 기준으로 블럭의 좌표를 생성
@@ -32,56 +33,54 @@ class BlockL {
             [[this.x, this.y], [this.x + 1, this.y], [this.x + 1, this.y + 1], [this.x + 1, this.y + 2]],
             [[this.x, this.y], [this.x + 1, this.y], [this.x + 2, this.y], [this.x, this.y + 1]],
         ];
+        this.locations = this.cordinate[this.turn];
     }
 
     display() {
 
         this.make();
-
         // 화면 초기화
         board.innerHTML = '';
         createTable('board');
-
-        this.cordinate[this.order].forEach(location =>
-            changeBordColor(location[0], location[1], this.color)
-        );
+        changeCellColor(board, this.locations, this.color);
     }
 
     collectX(){
         let x = [];
-        this.cordinate[this.order].forEach(location => x.push(location[0])); // x = td
+        this.locations.forEach(location => x.push(location[0])); // x = td
         x.sort(function(a, b) { return a - b});
+        console.log(x);
         return x;
     }
 
     collectY(){
         let y = [];
-        this.cordinate[this.order].forEach(location => y.push(location[1])); // y = tr
+        this.locations.forEach(location => y.push(location[1])); // y = tr
         y.sort(function(a, b) { return a - b});
         return y;
     }
 
     collectXY() {
 
-        let allXY = []; // [[1,2],[1,2],[1,2]];
+        let allXY = [];
 
         for (let i  = 1; i < blocks.length; i++) {
-
             const block = blocks[i];
-            console.log('is movement block', block);
-            console.log('is movement block', block.order);
-            console.log('is movement block', block.cordinate[block.order]);
-            allXY.push(block.cordinate[block.order]);
-
+            allXY.push(block.locations);
         }
+
         console.log('all xy', allXY);
-
-        // blocks 에 있는 칸들과 내가 이동하려고 하는 칸이 겹치는지 확인하자
-
-        return 'true';
+        return allXY;
     }
 
-    moveDown() {
+    isPossibleMove() {
+
+        // TODO : 이동하려는 곳에 블럭이 있는지 확인하기
+        return true;
+    }
+
+
+    moveDownBlock() {
         let y = this.collectY();
         console.log(this.collectXY());
         if (y.pop() < trCount -1) {
@@ -90,7 +89,7 @@ class BlockL {
         }
     }
 
-    moveLeft() {
+    moveLeftBlock() {
         let x = this.collectX();
         if (x[0] >= 1) {
             this.x -= 1;
@@ -98,7 +97,7 @@ class BlockL {
         }
     }
 
-    moveRight() {
+    moveRightBlock() {
         let x = this.collectX();
         if (x.pop() < tdCount -1) {
             this.x += 1;
@@ -107,40 +106,35 @@ class BlockL {
     }
 
     next() {
-        if (this.order < this.cordinate.length - 1) {
-            return this.order + 1
+        if (this.turn < this.cordinate.length - 1) {
+            console.log('next', this.turn + 1);
+            return this.turn + 1
         } else {
+            console.log('next', 0);
             return 0;
         }
     }
 
-    turn() {
+    turnBlock() {
         let overTd = this.collectX(this.next()).find(x => x >= tdCount);
         let overTr = this.collectY(this.next()).find(y => y >= trCount);
         if (overTd === undefined && overTr === undefined){
-            this.order = this.next();
+            this.turn = this.next();
         }
+        // TODO : this.isPossibleMove();
+        this.locations = this.cordinate[this.turn];
         this.display();
     }
-
 }
 
 
-// 보드칸의 색상을 변경
-function changeBordColor(tr, td, color) {
+function changeCellColor(element, locations, color) {
 
-    let x = board.childNodes.item(td);
-    let y = x.childNodes.item(tr);
-    y.style.backgroundColor = color;
-
-}
-
-// 배경칸의 색상을 변경
-function changeBGColor(tr, td, color) {
-
-    let x = background.childNodes.item(td);
-    let y = x.childNodes.item(tr);
-    y.style.backgroundColor = color;
+    locations.forEach((location) => {
+        let x = element.childNodes.item(location[1]); // x = td
+        let y = x.childNodes.item(location[0]); // y = tr
+        y.style.backgroundColor = color;
+    });
 
 }
 
@@ -150,19 +144,19 @@ document.addEventListener('keydown', (event) => {
     const keyName = event.key;
 
     if (keyName === 'ArrowDown') {
-        block.moveDown();
+        block.moveDownBlock();
     }
 
     if (keyName === 'ArrowLeft') {
-        block.moveLeft();
+        block.moveLeftBlock();
     }
 
     if (keyName === 'ArrowRight') {
-        block.moveRight();
+        block.moveRightBlock();
     }
 
     if (keyName === 'ArrowUp') {
-        block.turn();
+        block.turnBlock();
     }
 
     if (keyName === 'Escape') {
@@ -173,40 +167,28 @@ document.addEventListener('keydown', (event) => {
 
 function autoDown() {
 
-    let y = block.collectY(block.order).pop(); // 가장 작은 y값
+    let y = block.collectY(block.turn).pop(); // 가장 작은 y값
 
     if (y >= trCount - 1) { // 바닥에 닿으면
         makeNewBlock();
     } else {
-        block.moveDown();
-        y = block.collectY(block.order).pop();
+        block.moveDownBlock();
+        y = block.collectY(block.turn).pop();
     }
 }
 
 function makeNewBlock() {
     blocks.push(new BlockL());
     block = blocks[blocks.length-1];
-    // 과거블록 표시해주기
-    console.log(1);
     displayDeadBlock();
-    console.log(2);
     block.display();
-    console.log(3);
 }
 
 function displayDeadBlock() {
-
-    console.log('blocks', blocks);
-
     for (let i = 0; i < blocks.length - 1; i++) {
-
         const block = blocks[i];
-        block.cordinate[block.order].forEach(location => {
-            changeBGColor(location[0], location[1], block.color);
-        });
-
+        changeCellColor(background, block.locations, block.color);
     }
-
 }
 
 function setGame() {
