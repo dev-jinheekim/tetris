@@ -1,0 +1,16 @@
+{
+  "name": "tetris-with-javascript",
+  "version": "1.0.0",
+  "description": "자바스크립트 학습을 위한 테트리스 만들기",
+  "main": "main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@github.com-jinheekim:dev-jinheekim/tetris-with-javascript.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}
